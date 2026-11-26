@@ -1,347 +1,306 @@
-<p align="center">
-  <img src="logo.png" alt="RentLog logo" width="220">
-</p>
+# RentLog: Java-Based Apartment Rental & Tenant Management System
 
-# 1. Project Title
-
-**RentLog – Apartment Rental Management System**
-
-> A Java (OOP) application for managing tenants, apartments, leases, payments and deposits, available as a **console app** and a **Swing desktop GUI** that share the same JSON data files.
+> **OOP 101 – Object-Oriented Programming** | College of Informatics and Computing Sciences, Computer Science Department
+> 1st Semester, AY 2026-2027 | Section: IT 2104 | Team: Sir Jayson Pogi Team
 
 ---
 
-# 2. Project Description
+## Table of Contents
 
-RentLog is a property and rental management system written in Java (package `com.rentlog`). It helps a landlord or property manager keep track of apartments, tenants, lease agreements, monthly rent payments and security deposits in one place.
-
-The system has two entry points that work on the **same set of JSON files**, so data entered in one is immediately available in the other:
-
-| Entry point | Class | Description |
-|---|---|---|
-| Console application | `Main` | Menu-driven CLI with an Administrator Portal and a Tenant Portal (view mode). |
-| Desktop application | `RentLogUI` | Swing GUI with a role chooser, sign-in screen, landlord dashboard (charts, tables, alerts, global search) and tenant portal. |
-
-Data is stored locally as pretty-printed UTF-8 JSON (using Gson), so no database installation is required.
-
----
-
-# 3. Problem Being Addressed
-
-Small landlords and apartment managers often track rent in notebooks, chat messages or spreadsheets. This leads to:
-
-- Missed or forgotten rent due dates and lease expirations.
-- Unclear balances when tenants pay in installments or for a different month than the payment date.
-- Lost records when a tenant moves out (names, payment history and deposits disappear).
-- Confusion over deposits and advance payments (what was used, what is refundable).
-- No quick way to see monthly income, occupancy and unpaid rent.
-
-RentLog replaces manual tracking with a single, validated system that computes balances automatically, raises alerts, and keeps a permanent history.
+1. [Project Title](#1-project-title)
+2. [Project Description](#2-project-description)
+3. [Problem Being Addressed](#3-problem-being-addressed)
+4. [Project Objectives](#4-project-objectives)
+5. [Target Users](#5-target-users)
+6. [Main Features](#6-main-features)
+7. [Technologies Used](#7-technologies-used)
+8. [Team Members and Roles](#8-team-members-and-roles)
+9. [OOP Concepts Demonstrated](#9-oop-concepts-demonstrated)
+10. [Instructions for Running the Program](#10-instructions-for-running-the-program)
+11. [Sample Screenshots](#11-sample-screenshots)
+12. [Known Limitations](#12-known-limitations)
+13. [Future Improvements](#13-future-improvements)
+14. [Project Contributors](#14-project-contributors)
 
 ---
 
-# 4. Project Objectives
+## 1. Project Title
 
-1. Provide a secure login for the landlord and for tenants, with a lockout after repeated failed attempts.
-2. Manage apartments (add, view, change rent, remove) and their Occupied/Vacant status.
-3. Register tenants and automatically create their lease, deposit and room assignment in one step.
-4. Record payments per **billing month** with support for partial payments, multiple payment methods and reference numbers.
-5. Track security deposits and advance payments (Held / Applied / Refunded).
-6. Warn the landlord about overdue rent and expiring or expired leases.
-7. Generate a monthly financial report (cash received, rent expected vs. collected, occupancy).
-8. Preserve all history after a tenant moves out.
-9. Demonstrate core **Object-Oriented Programming** principles in a real-world system.
+**RentLog: Java-Based Apartment Rental & Tenant Management System**
 
 ---
 
-# 5. Target Users
+## 2. Project Description
 
-| User | How they use RentLog |
-|---|---|
-| **Landlord / Property Manager (Admin)** | Manages apartments, tenants, leases, payments, deposits, alerts and reports. |
-| **Tenant** | Logs in (view mode) to see their profile, lease summary, payment history, current-month balance and next due date, and can change their own password. |
-| **Students / Instructors** | Reference project that demonstrates OOP concepts in Java. |
+RentLog is a Java desktop and command-line application that helps apartment owners, landlords, and property managers run their rental operations in an organized way. It keeps tenant profiles, tracks vacant and occupied units, manages lease contracts and due dates, records partial and full rental payments, computes remaining monthly balances, and monitors security deposits and advance payments.
 
----
+The system offers two interfaces that share the same data:
 
-# 6. Main Features
+- **Swing GUI** (`RentLogUI`): an interactive desktop interface with a dashboard, charts, and notifications.
+- **Command-Line Interface** (`Main`): a full-featured console version with numbered menus.
 
-### Authentication & Security
-- Separate Admin and Tenant login (case-insensitive username, exact password match, minimum 6 characters).
-- **Lockout:** 3 consecutive failed attempts lock that account for **60 seconds** (tracked per portal and username).
-- Moved-out (Inactive) tenants cannot log in.
-- Change-password option for both roles.
-
-### Administrator Portal
-| # | Feature | Highlights |
-|---|---|---|
-| 1 | Register New Tenant | Unique tenant ID (never reused), contact format check, vacant-room check, lease end after move-in, due day 1–31, unique username, security deposit + advance payment. Creates `Tenant`, `Deposit` and `Rental` together and marks the room Occupied. |
-| 2 | View All Tenants | Separates Active and Moved-Out tenants with totals. |
-| 3 | Update Tenant Information | Update contact number. |
-| 4 | Move Out Tenant | Date validation, marks tenant Inactive, frees the room, keeps all records, reminds if the deposit is still Held. |
-| 5 | Manage Apartments | View (with occupancy counts), add, change rent (affects **new** leases only), remove (blocked if occupied or has tenant history). |
-| 6 | Record Tenant Payment | Payment date vs. billing month, partial payments, overpayment protection, reference number required for GCash / Bank Transfer, Advance Payment deducts from the tenant's advance. |
-| 7 | Manage Deposits | View, search, apply, refund. Refundable amount becomes PHP0.00 once Applied or Refunded. |
-| 8 | View Payment History | Full list of recorded payments. |
-| 9 | Monthly Financial Report | Cash received by method, rent expected vs. collected, collection efficiency %, historical occupancy for the chosen month. |
-| 10 | Alerts | `[LEASE EXPIRED]`, `[LEASE ENDING SOON]` (within 30 days) and `[OVERDUE RENT]` (with days late). |
-| 11 | Change My Password | |
-| 12 | Logout | |
-
-### Tenant Portal (View Mode)
-- Personal profile and room details
-- Lease summary (rent, due day, next due date, lease status)
-- Payment history and balances, including current-month paid / balance
-
-### Desktop GUI (`RentLogUI`)
-- Role chooser and styled sign-in screen
-- Landlord dashboard with month picker, charts (donut / line), stat cards and alerts bell
-- Filterable tables for apartments, tenants, rentals, payments and deposits
-- Modal forms for registering tenants, recording payments, move-out, rent change, etc.
-- Global search and monthly reports view
-- Tenant portal (profile, payments, change password)
-
-### Data Persistence
-All changes are saved as pretty-printed JSON: `admin.json`, `tenants.json`, `apartments.json`, `payments.json`, `deposits.json`, `rentals.json`. Both the console app and the GUI read and write these same files.
+Both interfaces read from and write to the same JSON files, so records stay consistent no matter which one is used. RentLog also generates real-time overdue and lease alerts and monthly financial summary reports.
 
 ---
 
-# 7. Technologies Used
+## 3. Problem Being Addressed
+
+Managing apartment units and tenant records manually often leads to:
+
+- Misplaced tenant and lease information
+- Inaccurate balance calculations
+- Unorganized payment and deposit records
+- Missed due dates and expiring leases
+
+These problems affect apartment owners, landlords, and property managers who handle tenants, lease terms, and monthly collections. RentLog replaces manual record-keeping with a structured, reliable system that reduces human error.
+
+---
+
+## 4. Project Objectives
+
+### General Objective
+
+To develop a Java-based apartment rental management system with dual-portal access across both a Swing graphical user interface (GUI) and a command-line interface (CLI) that streamlines property operations by tracking tenant profiles, apartment occupancy, lease contracts, payment histories, and security deposits using Object-Oriented Programming (OOP) principles and JSON data persistence.
+
+### Specific Objectives
+
+| Objective | Description |
+| --- | --- |
+| **OOP Architecture** | Implement the four core OOP pillars (Encapsulation, Inheritance, Polymorphism, Abstraction) across an 11-class architecture: `Main`, `RentLogUI`, `DataStore`, `User`, `Admin`, `Tenant`, `Apartment`, `Rental`, `Payment`, `Deposit`, and the `Reportable` interface. |
+| **Tenant, Apartment & Lease Lifecycle** | Let administrators manage apartment units and pricing, register tenants with lease contracts, view active and historical records, update contact numbers, and process move-outs while preserving historical payment and deposit records. |
+| **Automated Billing & Balance Tracking** | Compute remaining monthly balances using `BigDecimal` by aggregating payments within the same billing month (`YearMonth`). Support Cash, Bank Transfer, GCash, and Advance Payment methods, prevent overpayment, and update payment status (Paid, Partial, Unpaid). |
+| **Deposit & Advance Payment Management** | Track security deposits and advance payments, advance usage, refundable balances, and holding statuses (Held, Applied, Refunded). Deposit application and refund are only allowed after tenant move-out. |
+| **Alerts & Monthly Financial Reporting** | Provide alerts for expired leases, leases expiring within 30 days, and overdue rent, plus monthly financial and historical occupancy reports using Java collections and `java.time`. |
+| **Dual-Portal Authentication & Security** | Provide separate Landlord/Admin and read-only Tenant portals in both GUI and CLI with credential validation, active-account verification, password changes, and a 3-attempt login lockout (60 seconds). |
+
+---
+
+## 5. Target Users
+
+| User | How They Use RentLog |
+| --- | --- |
+| **Landlord / Property Manager** | Logs into the Administrator Portal (GUI or CLI) to manage apartment units and rental rates, register tenants with lease terms, view active and moved-out tenants, update contact details, process move-outs, record partial or full payments (including advance deductions), apply or refund deposits after move-out, monitor overdue and lease alerts, and generate monthly financial and occupancy reports. |
+| **Tenant (View Mode)** | Logs into the Tenant Portal (GUI or CLI) to view their rental profile, assigned room, monthly lease rate, due day, next due date, lease expiration status, current-month balance summary, and payment receipts, and to change their account password. |
+
+---
+
+## 6. Main Features
+
+| Feature | Description |
+| --- | --- |
+| **Dual-Portal Sign-In & Lockout Protection** | Role selection with separate Admin and Tenant logins, polymorphic credential verification, active-tenant login enforcement, password updates, and a 3-attempt / 60-second lockout. |
+| **Interactive Swing Desktop UI & Dashboard** | Landlord dashboard with KPI cards, income trend chart (Monthly/Quarterly/Yearly), occupancy donut chart, upcoming due dates, live table filtering, global search, and a notification bell with badge alerts. |
+| **Manage Apartments** | Add rooms, view occupancy summaries, update monthly rent (affects new leases only; existing lease snapshots are preserved), and remove vacant rooms with no tenant history. |
+| **Register New Tenant & Lease** | Register tenants with unique ID and username validation, assign a vacant room, record move-in date, lease expiration, and rent due day (1-31), set initial security deposit and advance payment, create a `Rental` lease snapshot, and mark the room Occupied. |
+| **View All Tenants** | Display active and moved-out tenants with contact details, rooms, move-in/move-out dates, account status, and summary counts. |
+| **Update Tenant Information** | Look up an active tenant by ID and update their validated contact number. |
+| **Move Out Tenant** | Mark a tenant Inactive with a validated move-out date, revoke portal access, set the apartment back to Vacant, and keep all historical records. |
+| **Record Tenant Payment** | Record payments (Cash, Bank Transfer, GCash, Advance Payment) with unique Payment ID validation, reference numbers (required for Cash and Bank Transfer), separate payment date and billing month, advance deduction, overpayment prevention, balance computation, and formatted receipts. |
+| **Manage Deposits** | View all deposit and advance records (original advance, advance used, remaining advance, refundable amount, tenant status), look up by Tenant ID, and apply or refund deposits after move-out. |
+| **Automated Lease & Overdue Alerts** | Alerts for expired leases, leases expiring within 30 days, and overdue rent with exact days late. |
+| **Tenant Portal (View Mode)** | Read-only access to profile, lease terms, next due date, current-month balance, payment receipt history, and password change. |
+| **Monthly Financial & Occupancy Report** | For any selected `YYYY-MM` month: cash received by payment date (by method), expected vs. collected rent, collection efficiency percentage, active tenants, and historical room occupancy. |
+| **Shared JSON Data Persistence (Gson)** | Saves and loads system state across six JSON files shared by the GUI and CLI, including default account setup and legacy record migration. |
+
+---
+
+## 7. Technologies Used
 
 | Technology | Purpose |
-|---|---|
-| **Java** (JDK 8 or higher; JDK 11+ recommended) | Core language |
-| **Java Swing / AWT** | Desktop GUI (`RentLogUI`) |
-| **Gson** (`com.google.code.gson`) | JSON reading and writing |
-| **`java.time` API** (`LocalDate`, `YearMonth`) | Dates, billing months, due-date logic |
-| **`BigDecimal`** | Accurate money calculations |
-| **JSON files** | Local data storage (no database needed) |
+| --- | --- |
+| **Java** | Core programming language (OOP) |
+| **Java Swing** | Graphical user interface (`RentLogUI`) |
+| **Console / CLI** | Text-based interface (`Main`) |
+| **Google Gson 2.10.1** | JSON serialization and deserialization |
+| **JSON files** | Local data storage (`admin.json`, `tenants.json`, `apartments.json`, `payments.json`, `deposits.json`, `rentals.json`) |
+| **`java.math.BigDecimal`** | Accurate currency calculations |
+| **`java.time`** (`LocalDate`, `YearMonth`) | Date, due date, and billing month handling |
+| **Java Collections** (`ArrayList`, `HashMap`, `TreeMap`) | In-memory data management |
+| **Git & GitHub** | Version control and collaboration |
 
 ---
 
-# 8. Team Members and Roles
+## 8. Team Members and Roles
 
-> Replace the placeholders below with your group's details.
+**Team Name:** Sir Jayson Pogi Team | **Section:** IT 2104
 
 | Member | Role | Responsibilities |
-|---|---|---|
-| _Full Name_ | Project Leader / Lead Developer | _e.g., system design, `Main` controller_ |
-| _Full Name_ | Developer | _e.g., domain classes (`Tenant`, `Apartment`, `Rental`)_ |
-| _Full Name_ | Developer | _e.g., billing logic (`Payment`, `Deposit`)_ |
-| _Full Name_ | UI Developer | _e.g., Swing GUI (`RentLogUI`)_ |
-| _Full Name_ | Documentation / Tester | _e.g., UML diagram, testing, README_ |
+| --- | --- | --- |
+| Sanchez, Althea P. | Lead Programmer | Coordinates the implementation of Java classes, methods, and OOP features. |
+| Cepillo, Steven Nicholas A. | Documentation | Maintains the README, testing documentation, and screenshots; assists in checking application functionality. |
+| Evangelista, Haira Joice A. | System/Design Lead | Develops system requirements, class designs, UML diagrams, and overall application structure. |
+| Macaraig, Austine Jay U. | Project Leader | Coordinates tasks, monitors deadlines, communicates with the instructor, and facilitates team meetings. |
+| Mendoza, Mark Airon O. | Documentation | Maintains the README, testing documentation, and screenshots; assists in checking application functionality. |
 
 ---
 
-# 9. OOP Concepts Demonstrated
+## 9. OOP Concepts Demonstrated
 
-| Concept | Where it appears in RentLog |
-|---|---|
-| **Abstraction** | `User` is an abstract class with the abstract method `getRoleDetails()`. `Reportable` is an interface that declares `getReportSummary()`. |
-| **Inheritance** | `Admin` extends `User`; `Tenant` extends `User`. Shared identity, credentials and validation live in `User`. |
-| **Polymorphism** | `authenticate()` is called on any `User` reference. `Tenant` overrides it to also require `isActive()`. `getRoleDetails()` and `getReportSummary()` behave differently in each subclass. |
-| **Encapsulation** | Private/protected fields with validated setters (e.g., `setContactNumber()`, `setPassword()`, `setMonthlyRent()`), so invalid data can't enter an object. |
-| **Interfaces** | `Reportable` is implemented by both `Tenant` and `Deposit`. |
-| **Composition / Aggregation** | `RentLogUI` owns a `DataStore`, and `DataStore` holds lists of every entity class. |
-| **Single Responsibility** | `Payment` owns billing math, `Rental` owns lease/due-date logic, `DataStore` owns persistence and lookups. |
-| **Static utility & validation methods** | `User.isValidPassword()`, `Payment.normalizeMoney()`, `Payment.requiresReference()`. |
-| **Exception handling** | `IllegalArgumentException` / `IllegalStateException` for invalid input and illegal state changes (e.g., applying an already-refunded deposit). |
+| OOP Concept | How It Is Used in RentLog |
+| --- | --- |
+| **Classes and Objects** | Core domain objects (`User`, `Admin`, `Tenant`, `Apartment`, `Rental`, `Payment`, `Deposit`) are coordinated by `Main` (CLI controller), `RentLogUI` (Swing GUI), and `DataStore` (shared persistence/query layer). |
+| **Methods** | Business logic is encapsulated in methods such as `authenticate()`, `calculateBalance()`, `updatePaymentStatus()`, `markOccupied()`, `markVacant()`, `updateContact()`, `moveOut()`, `useAdvance()`, `applyDeposit()`, `refundDeposit()`, `checkLeaseStatus()`, `dueDateFor()`, `calculateNextDueDate()`, `saveAll()`, and `reload()`. |
+| **Encapsulation** | Entity fields are `private` or `protected` (e.g., `private BigDecimal remainingBalance`, `protected String fullName`). Setters validate input: `BigDecimal` normalized to 2 decimal places, non-empty checks, regex contact validation, `LocalDate`/`YearMonth` parsing, and reference number rules. |
+| **Inheritance** | The abstract class `User` is extended by `Admin` and `Tenant`, reusing shared identity fields, password verification, and validation helpers. |
+| **Polymorphism** | `authenticate()` is overridden (enforcing active status for `Tenant` logins), the abstract `getRoleDetails()` is implemented by `Admin` and `Tenant`, and `Reportable` references are handled uniformly when generating summaries. |
+| **Abstraction** | The abstract class `User` and the `Reportable` interface (`getReportSummary()`) enforce consistent contracts across domain entities. |
+| **Exception Handling** | `try-catch` blocks handle `NumberFormatException`, `DateTimeParseException`, `IOException`, `JsonParseException`, `IllegalArgumentException`, and `IllegalStateException`, with custom dialogs and prompts. |
+| **Collections & File I/O** | `ArrayList<Tenant>`, `ArrayList<Apartment>`, `ArrayList<Payment>`, `ArrayList<Deposit>`, `ArrayList<Rental>`, `ArrayList<Admin>`, and `HashMap`/`TreeMap` structures, persisted via Gson (`TypeToken`, `BufferedReader`, `BufferedWriter`). |
 
 ### Class Overview
 
-| Class / Interface | Type | Role |
-|---|---|---|
-| `Reportable` | Interface | Contract for report summaries |
-| `User` | Abstract class | Shared identity, credentials, validation |
-| `Admin` | Class (extends `User`) | Landlord / administrator account |
-| `Tenant` | Class (extends `User`, implements `Reportable`) | Tenant, room, move-in/out, status |
-| `Apartment` | Class | Room, monthly price, Occupied/Vacant |
-| `Rental` | Class | Lease snapshot, due day, expiry |
-| `Payment` | Class | Payment record and balance computation |
-| `Deposit` | Class (implements `Reportable`) | Security deposit and advance payment |
-| `DataStore` | Helper class | JSON persistence, lookups, money totals, ID generation |
-| `Main` | Controller | Console application |
-| `RentLogUI` | Controller (extends `JFrame`) | Swing desktop application |
+| Class | Purpose |
+| --- | --- |
+| `Main` | CLI entry point and console controller: menus, authentication, lockout tracking, input validation, legacy JSON migration, workflows, and Gson file I/O. |
+| `RentLogUI` | Swing GUI with dashboard, charts, tables, and notifications. |
+| `DataStore` | Shared persistence and query layer used by both interfaces. |
+| `User` *(abstract)* | Base class for shared identity, credentials, and validation. |
+| `Admin` | Administrator account (extends `User`). |
+| `Tenant` | Registered tenant with room assignment and move-in/out lifecycle (extends `User`, implements `Reportable`). |
+| `Apartment` | Rental unit with room number, monthly rent, and Vacant/Occupied status. |
+| `Rental` | Lease contract snapshot, due day, due-date clamping, and lease expiration status. |
+| `Payment` | Rent payment transaction, method/reference validation, balance computation, and receipts. |
+| `Deposit` | Security deposit and advance payment tracking with Held/Applied/Refunded states (implements `Reportable`). |
+| `Reportable` *(interface)* | Uniform contract for generating report summaries. |
 
-A full UML class diagram is available in `RentLog_UML_Class_Diagram.png` / `.svg`.
+*The classes may change as the project is developed.*
 
 ---
 
-# 10. Instructions for Running the Program
+## 10. Instructions for Running the Program
 
-### Requirements
-- JDK 8 or higher installed (`java -version` to check)
-- Gson JAR, e.g., `gson-2.10.1.jar`, downloaded from Maven Central
+### Prerequisites
 
-### Project structure
-```
-RentLog/
-├── lib/
-│   └── gson-2.10.1.jar
-├── src/com/rentlog/
-│   ├── Admin.java
-│   ├── Apartment.java
-│   ├── DataStore.java
-│   ├── Deposit.java
-│   ├── Main.java
-│   ├── Payment.java
-│   ├── Rental.java
-│   ├── Reportable.java
-│   ├── RentLogUI.java
-│   ├── Tenant.java
-│   └── User.java
-├── logo.png
-└── README.md
+- **Java Development Kit (JDK)** installed (`java -version` and `javac -version` should both work)
+- **Google Gson 2.10.1** (`gson-2.10.1.jar`)
+- A terminal or an IDE such as IntelliJ IDEA, Eclipse, or VS Code
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/sanchez417/RentLog.git
+cd RentLog
 ```
 
-### Compile
+### 2. Add the Gson library
+
+Download `gson-2.10.1.jar` and place it in a `lib/` folder (or add it to your IDE's project libraries).
+
+### 3. Compile
+
+Adjust the paths below to match your project's folder structure.
+
 **Windows**
 ```bash
-javac -cp "lib/gson-2.10.1.jar" -d out src/com/rentlog/*.java
+javac -cp "lib/gson-2.10.1.jar" -d out *.java
 ```
+
 **macOS / Linux**
 ```bash
-javac -cp "lib/gson-2.10.1.jar" -d out src/com/rentlog/*.java
+javac -cp "lib/gson-2.10.1.jar" -d out *.java
 ```
 
-### Run the console application
-**Windows**
+### 4. Run
+
+**Command-Line Interface (CLI)**
+
+Windows:
 ```bash
-java -cp "out;lib/gson-2.10.1.jar" com.rentlog.Main
+java -cp "out;lib/gson-2.10.1.jar" Main
 ```
-**macOS / Linux**
+
+macOS / Linux:
 ```bash
-java -cp "out:lib/gson-2.10.1.jar" com.rentlog.Main
+java -cp "out:lib/gson-2.10.1.jar" Main
 ```
 
-### Run the desktop (Swing) application
-**Windows**
+**Swing GUI**
+
+Windows:
 ```bash
-java -cp "out;lib/gson-2.10.1.jar" com.rentlog.RentLogUI
+java -cp "out;lib/gson-2.10.1.jar" RentLogUI
 ```
-**macOS / Linux**
+
+macOS / Linux:
 ```bash
-java -cp "out:lib/gson-2.10.1.jar" com.rentlog.RentLogUI
+java -cp "out:lib/gson-2.10.1.jar" RentLogUI
 ```
 
-> Run these commands from the project root so the `.json` data files are created and read in the same folder. If you use an IDE (IntelliJ, Eclipse, NetBeans), add the Gson JAR to the project libraries and run `Main` or `RentLogUI`.
+### Running in an IDE
 
-### Default accounts (created on first run)
+1. Open the project folder in your IDE.
+2. Add `gson-2.10.1.jar` to the project's libraries/classpath.
+3. Run `Main.java` for the CLI, or `RentLogUI.java` for the GUI.
 
-| Role | Username | Password |
-|---|---|---|
-| Administrator (`A001`, Property Manager) | `admin` | `admin123` |
-| Tenant (`T001`, Juan Dela Cruz, Room 101) | `tenant1` | `password123` |
+### Using the program
 
-First-run demo data also includes apartments **101** (PHP5,000.00, Occupied), **102** (PHP5,500.00, Vacant) and **201** (PHP6,000.00, Vacant), plus a 1-year lease for T001 and a PHP5,000.00 security deposit with a PHP5,000.00 advance payment.
+1. Choose a portal: **Landlord / Admin** or **Tenant (View Mode)**.
+2. Log in with your username and password. After 3 failed attempts, login is locked for 60 seconds.
+3. Use the dashboard/sidebar (GUI) or numbered menu (CLI) to manage apartments, tenants, payments, deposits, alerts, and reports.
+4. Data is saved automatically to the JSON files and shared by both interfaces.
 
-> The default admin password should be changed after the first login (Administrator Menu → *Change My Password*).
-
-### Sample console flow
-```
-==================================================
-          WELCOME TO RENTLOG
-==================================================
-1. Landlord / Admin Portal
-2. Tenant Portal (View Mode)
-3. Exit System
-Enter choice (1-3):
-```
+> **Default admin account:** *(add the default username and password from the project's setup here)*
 
 ---
 
-# 11. Sample Screenshots
+## 11. Sample Screenshots
 
-> Add your own screenshots to a `screenshots/` folder and update the file names below.
+> Add screenshots to a `screenshots/` folder and update the paths below.
 
-| Screen | Preview |
-|---|---|
-| Main menu (console) | `![Main Menu](screenshots/console-main-menu.png)` |
-| Administrator menu | `![Admin Menu](screenshots/console-admin-menu.png)` |
-| Register tenant | `![Register Tenant](screenshots/console-register-tenant.png)` |
-| Record payment & receipt | `![Record Payment](screenshots/console-record-payment.png)` |
-| Monthly financial report | `![Monthly Report](screenshots/console-monthly-report.png)` |
-| Alerts | `![Alerts](screenshots/console-alerts.png)` |
-| Tenant portal | `![Tenant Portal](screenshots/console-tenant-portal.png)` |
-| GUI role chooser / login | `![GUI Login](screenshots/gui-login.png)` |
-| GUI landlord dashboard | `![GUI Dashboard](screenshots/gui-dashboard.png)` |
-| GUI payments / deposits | `![GUI Payments](screenshots/gui-payments.png)` |
-
-### Sample output: recording a payment
-```
---- RECORD TENANT PAYMENT ---
-Enter Tenant ID: T001
-Enter Payment Date (YYYY-MM-DD): 2026-11-10
-Billing Month this payment is for (YYYY-MM) [ENTER = 2026-11]:
-
---- RENT DETAILS (2026-11) ---
-Monthly Rent: PHP5,000.00
-Previously Paid: PHP0.00
-Remaining Balance: PHP5,000.00
-Enter Amount Paid: PHP3000
-Payment Method (Cash/Bank Transfer/GCash/Advance Payment): GCash
-Enter Reference Number: GC-987654321
-
-Payment successfully recorded!
-Payment ID        : P001
-Billing Month     : 2026-11
-Amount Paid       : PHP3,000.00
-Payment Method    : GCash
-Reference No.     : GC-987654321
-Remaining Balance : PHP2,000.00
-Payment Status    : Partial
-```
-
-### Sample output: alerts
-```
-==================================================
-                      ALERTS
-==================================================
-[OVERDUE RENT] Juan Dela Cruz (T001, Room 101) - PHP2,000.00 unpaid for 2026-11
-(due 2026-11-08, 13 day(s) late)
-```
+| Screen | Screenshot |
+| --- | --- |
+| Portal Selection / Login | `![Login](screenshots/login.png)` |
+| Landlord Dashboard (GUI) | `![Dashboard](screenshots/dashboard.png)` |
+| Manage Apartments | `![Apartments](screenshots/apartments.png)` |
+| Register New Tenant & Lease | `![Register Tenant](screenshots/register-tenant.png)` |
+| Record Payment & Receipt | `![Payment](screenshots/payment.png)` |
+| Manage Deposits | `![Deposits](screenshots/deposits.png)` |
+| Lease & Overdue Alerts | `![Alerts](screenshots/alerts.png)` |
+| Monthly Financial Report | `![Report](screenshots/monthly-report.png)` |
+| Tenant Portal (View Mode) | `![Tenant Portal](screenshots/tenant-portal.png)` |
+| CLI Main Menu | `![CLI Menu](screenshots/cli-menu.png)` |
 
 ---
 
-# 12. Known Limitations
+## 12. Known Limitations
 
-- **Passwords are stored in plain text** in `admin.json` and `tenants.json` (no hashing). This is acceptable for a class project but not for real deployment.
-- Data is stored in local JSON files, so there is no multi-user or network access, and no file locking if the console app and GUI are used at the same time.
-- Tenants have **view-only** access; they cannot pay or submit requests through the system.
-- Payments are recorded manually; there is no integration with GCash, banks or other payment gateways.
-- The console app (`Main`) and `DataStore` duplicate some lookup and validation logic.
-- One lease per tenant; there is no support for lease renewal history or multiple tenants sharing a room.
-- No late fees, penalties or utility bills are computed.
-- No automated unit tests.
+- **Local JSON storage:** Data is stored in local JSON files instead of a hosted relational database (e.g., MySQL), so it is not suited for many simultaneous users.
+- **No online payment gateway:** Payments (including GCash and Bank Transfer) must be recorded manually by the administrator. They are not processed through live payment channels.
+- **Read-only Tenant Portal:** Tenants can only view their information and change their password. They cannot make payments or edit their profile.
+- **Single administrator workflow:** The system is designed for one landlord/property manager setup and does not include multi-user roles or permissions beyond Admin and Tenant.
+- **No automated notifications:** Alerts appear inside the application only. No email or SMS reminders are sent.
+- **Deposit restrictions:** Security deposits can only be applied or refunded after a tenant has moved out.
 
 ---
 
-# 13. Future Improvements
+## 13. Future Improvements
 
-- Hash passwords (e.g., BCrypt/SHA-256 with salt) and add password-reset support.
-- Replace JSON files with a database (SQLite / MySQL) for reliability and concurrent access.
-- Refactor `Main` to use `DataStore` so the CLI and GUI share a single logic layer.
-- Add lease renewal, late-fee computation and utility billing.
-- Export reports and receipts to PDF/Excel and send email or SMS reminders.
-- Let tenants submit payment proofs and maintenance requests.
-- Add automated unit tests (JUnit) for billing, deposit and lease logic.
-- Package the app as an executable JAR/installer with a build tool (Maven or Gradle).
-
----
-
-# 14. Project Contributors
-
-> Replace with your group's names, student numbers and contact details.
-
-| Name | Student No. | Email / GitHub |
-|---|---|---|
-| _Full Name_ | _00-0000-000_ | _name@email.com / @username_ |
-| _Full Name_ | _00-0000-000_ | _name@email.com / @username_ |
-| _Full Name_ | _00-0000-000_ | _name@email.com / @username_ |
-
-**Course / Section:** _CCS/OOP – Section ___
-**Instructor:** _Instructor's Name_
-**Academic Year:** _2026–2027_
+- Migrate from JSON files to a relational database (e.g., MySQL or SQLite)
+- Integrate online payment gateways (e.g., GCash, bank APIs) for automatic payment recording
+- Send email or SMS reminders for due dates, overdue rent, and expiring leases
+- Allow tenants to submit payments, maintenance requests, and profile updates
+- Export reports and receipts to PDF or Excel
+- Support multiple properties and multiple administrator accounts with role permissions
+- Add password hashing and stronger security measures
+- Build a web or mobile version of RentLog
+- Add automated unit tests and data backup/restore features
 
 ---
 
-<p align="center"><sub>RentLog · Built with Java · © 2026</sub></p>
+## 14. Project Contributors
+
+| Name | SR-Code | GitHub Username |
+| --- | --- | --- |
+| Cepillo, Steven Nicholas A. | 25-05021 | [Cepillo-25-05021](https://github.com/Cepillo-25-05021) |
+| Evangelista, Haira Joice A. | 25-05052 | [25-05052-cmd](https://github.com/25-05052-cmd) |
+| Macaraig, Austine Jay U. | 25-07926 | [ostin-dotcom](https://github.com/ostin-dotcom) |
+| Mendoza, Mark Airon O. | 25-06457 | [mendoza-25-06457](https://github.com/mendoza-25-06457) |
+| Sanchez, Althea P. | 25-04787 | [sanchez417](https://github.com/sanchez417) |
+
+**Instructor:** Ms. Fatima Marie P. Agdon, MSCS
+
+**Repository:** [https://github.com/sanchez417/RentLog](https://github.com/sanchez417/RentLog)
+
+---
+
+*Developed for OOP 101 – Object-Oriented Programming, 1st Semester, AY 2026-2027.*
